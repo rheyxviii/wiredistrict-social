@@ -1,44 +1,38 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>WireDistrict Social</title>
-  <style>
-    body {
-      background: #111;
-      color: white;
-      font-family: Arial;
-      padding: 20px;
-    }
-    .post {
-      background: #222;
-      padding: 15px;
-      margin-bottom: 10px;
-      border-radius: 10px;
-    }
-  </style>
-</head>
-<body>
-
-<h1>WireDistrict Social Feed</h1>
-
-<div id="feed"></div>
+<div id="feed">Chargement...</div>
 
 <script>
-const ID = "116511006505909205"; // <-- remplace ici
+const ID = "116511006505909205";
 
 fetch(`https://mastodon.social/api/v1/accounts/${ID}/statuses`)
-  .then(res => res.json())
-  .then(data => {
+  .then(res => {
+    if (!res.ok) {
+      throw new Error("API error");
+    }
+    return res.json();
+  })
+  .then(posts => {
     const feed = document.getElementById("feed");
+    feed.innerHTML = "";
 
-    data.slice(0, 10).forEach(post => {
+    if (!posts.length) {
+      feed.innerHTML = "Aucun post trouvé.";
+      return;
+    }
+
+    posts.forEach(post => {
       const div = document.createElement("div");
-      div.className = "post";
+      div.style.background = "#222";
+      div.style.padding = "10px";
+      div.style.margin = "10px 0";
+      div.style.borderRadius = "8px";
+
       div.innerHTML = post.content;
       feed.appendChild(div);
     });
+  })
+  .catch(err => {
+    document.getElementById("feed").innerHTML =
+      "Erreur chargement Mastodon ❌";
+    console.error(err);
   });
 </script>
-
-</body>
-</html>
