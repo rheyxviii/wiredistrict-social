@@ -12,32 +12,37 @@ fetch(`https://mastodon.social/api/v1/accounts/${ID}/statuses`)
     posts.slice(0, 10).forEach(post => {
       const div = document.createElement("div");
       div.style.background = "#222";
-      div.style.padding = "10px";
+      div.style.padding = "12px";
       div.style.margin = "10px 0";
       div.style.borderRadius = "10px";
 
-      // texte du post
-      let content = post.content;
+      // TEXTE
+      let html = post.content || "";
 
-      // images du post
-      let media = "";
-
+      // IMAGES (version robuste)
       if (post.media_attachments && post.media_attachments.length > 0) {
-        post.media_attachments.forEach(img => {
-          if (img.type === "image") {
-            media += `<img src="${img.url}" style="max-width:100%; border-radius:10px; margin-top:10px;">`;
+        post.media_attachments.forEach(media => {
+          if (media.type === "image") {
+
+            // IMPORTANT : utiliser preview_url (plus fiable GitHub Pages)
+            const imgUrl = media.preview_url || media.url;
+
+            html += `
+              <div>
+                <img src="${imgUrl}" style="max-width:100%; border-radius:10px; margin-top:10px;">
+              </div>
+            `;
           }
         });
       }
 
-      div.innerHTML = content + media;
-
+      div.innerHTML = html;
       feed.appendChild(div);
     });
   })
   .catch(err => {
     document.getElementById("feed").innerHTML =
       "Erreur chargement Mastodon ❌";
-    console.error(err);
+    console.log(err);
   });
 </script>
