@@ -7,7 +7,6 @@
 
 <title>Wired District RP</title>
 
-<!-- CSS -->
 <link rel="stylesheet" href="style.css">
 
 </head>
@@ -17,74 +16,16 @@
 <h1>🔥 Wired District RP</h1>
 <p style="text-align:center;">Serveur FiveM Roleplay</p>
 
-<!-- FEED MASTODON -->
-<div id="feed" class="loading">
-Chargement du feed...
-</div>
-
 <hr>
 
-<!-- FEED SERVEUR -->
 <h2>📢 Actualités Serveur</h2>
 
+<!-- FEED STABLE (PAS D'ERREUR) -->
 <iframe 
-    src="https://rheyxviii.github.io/wiredistrict-social/">
+    src="https://rheyxviii.github.io/wiredistrict-social/"
+    style="width:100%; height:600px; border:none; border-radius:10px;">
 </iframe>
 
-<script>
-
-async function loadFeed(){
-
-    try {
-
-        const response = await fetch(
-            "https://mastodon.social/api/v1/timelines/public?limit=10"
-        );
-
-        const posts = await response.json();
-
-        const feed = document.getElementById("feed");
-
-        feed.innerHTML = "";
-
-        posts.forEach(post => {
-
-            const div = document.createElement("div");
-            div.className = "post";
-
-            let html = "";
-
-            html += `<div>${post.content}</div>`;
-
-            if(post.media_attachments){
-
-                post.media_attachments.forEach(media => {
-
-                    if(media.type === "image"){
-                        html += `<img src="${media.preview_url || media.url}">`;
-                    }
-
-                });
-
-            }
-
-            div.innerHTML = html;
-            feed.appendChild(div);
-
-        });
-
-    } catch (error) {
-
-        document.getElementById("feed").innerHTML =
-        "Erreur chargement feed ❌";
-
-    }
-
-}
-
-loadFeed();
-
-</script>
-
 </body>
+
 </html>
