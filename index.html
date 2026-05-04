@@ -5,40 +5,118 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>WireDistrict RP</title>
+<title>WireDistrict RP - Feed</title>
 
-<link rel="stylesheet" href="style.css">
+<style>
+
+body{
+    margin:0;
+    padding:20px;
+    background:#0f0f0f;
+    color:white;
+    font-family:Arial;
+}
+
+h1{
+    text-align:center;
+}
+
+#feed{
+    max-width:800px;
+    margin:0 auto;
+}
+
+.post{
+    background:#1e1e1e;
+    padding:15px;
+    margin:15px 0;
+    border-radius:10px;
+}
+
+.post img{
+    max-width:100%;
+    border-radius:10px;
+    margin-top:10px;
+}
+
+.loading{
+    text-align:center;
+    opacity:0.7;
+}
+
+</style>
 
 </head>
 
 <body>
 
-<header>
-    <h1>🔥 WireDistrict RP</h1>
-    <p>Serveur FiveM Roleplay</p>
-</header>
+<h1>🔥 WireDistrict Feed</h1>
 
-<hr>
+<div id="feed" class="loading">Chargement des posts...</div>
 
-<section>
+<script>
 
-    <h2>📢 Mastodon WireDistrict</h2>
+async function loadFeed() {
 
-    <iframe 
-        src="https://mastodon.social/@WireDistrict/embed"
-        style="width:100%; height:800px; border:none; border-radius:10px;">
-    </iframe>
+    const feed = document.getElementById("feed");
 
-</section>
+    try {
 
-<hr>
+        // 🔥 1. Trouver ton compte
+        const userRes = await fetch(
+            "https://mastodon.social/api/v1/accounts/lookup?acct=WireDistrict"
+        );
 
-<section>
+        const user = await userRes.json();
 
-    <h2>🎮 Connexion serveur</h2>
-    <p>fivem://connect/IP_DU_SERVEUR</p>
+        if (!user || !user.id) {
+            feed.innerHTML = "Compte introuvable ❌";
+            return;
+        }
 
-</section>
+        // 🔥 2. Récupérer posts
+        const postsRes = await fetch(
+            `https://mastodon.social/api/v1/accounts/${user.id}/statuses?limit=10`
+        );
+
+        const posts = await postsRes.json();
+
+        feed.innerHTML = "";
+
+        // 🔥 3. afficher posts
+        posts.forEach(post => {
+
+            const div = document.createElement("div");
+            div.className = "post";
+
+            let html = "";
+
+            html += `<div>${post.content}</div>`;
+
+            if (post.media_attachments && post.media_attachments.length > 0) {
+                post.media_attachments.forEach(media => {
+                    if (media.type === "image") {
+                        html += `<img src="${media.preview_url || media.url}">`;
+                    }
+                });
+            }
+
+            div.innerHTML = html;
+            feed.appendChild(div);
+
+        });
+
+    } catch (err) {
+
+        console.log(err);
+        feed.innerHTML = "Erreur chargement Mastodon ❌";
+
+    }
+}
+
+loadFeed();
+
+</script>
 
 </body>
 
