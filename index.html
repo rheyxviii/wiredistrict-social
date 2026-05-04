@@ -1,60 +1,45 @@
-async function loadFeed() {
+<!DOCTYPE html>
+<html lang="fr">
 
-    const feed = document.getElementById("feed");
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    try {
+<title>WireDistrict RP</title>
 
-        // 1. Trouver ton compte
-        const search = await fetch(
-            "https://mastodon.social/api/v1/accounts/search?q=WireDistrict"
-        );
+<link rel="stylesheet" href="style.css">
 
-        const accounts = await search.json();
+</head>
 
-        if (!accounts || accounts.length === 0) {
-            feed.innerHTML = "Compte Mastodon introuvable ❌";
-            return;
-        }
+<body>
 
-        const account = accounts[0];
+<header>
+    <h1>🔥 WireDistrict RP</h1>
+    <p>Serveur FiveM Roleplay</p>
+</header>
 
-        // 2. Récupérer TES posts uniquement
-        const postsRes = await fetch(
-            `https://mastodon.social/api/v1/accounts/${account.id}/statuses?limit=10`
-        );
+<hr>
 
-        const posts = await postsRes.json();
+<section>
 
-        feed.innerHTML = "";
+    <h2>📢 Mastodon WireDistrict</h2>
 
-        posts.forEach(post => {
+    <iframe 
+        src="https://mastodon.social/@WireDistrict"
+        style="width:100%; height:800px; border:none; border-radius:10px;">
+    </iframe>
 
-            const div = document.createElement("div");
-            div.className = "post";
+</section>
 
-            let html = "";
+<hr>
 
-            html += `<div>${post.content}</div>`;
+<section>
 
-            if (post.media_attachments && post.media_attachments.length > 0) {
-                post.media_attachments.forEach(media => {
-                    if (media.type === "image") {
-                        html += `<img src="${media.preview_url || media.url}">`;
-                    }
-                });
-            }
+    <h2>🎮 Connexion serveur</h2>
+    <p>fivem://connect/IP_DU_SERVEUR</p>
 
-            div.innerHTML = html;
-            feed.appendChild(div);
+</section>
 
-        });
+</body>
 
-    } catch (err) {
-
-        console.log(err);
-        feed.innerHTML = "Erreur chargement Mastodon ❌";
-
-    }
-}
-
-loadFeed();
+</html>
