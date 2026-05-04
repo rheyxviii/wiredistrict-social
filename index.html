@@ -1,3 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Wired District RP</title>
+
+<!-- CSS -->
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<h1>🔥 Wired District RP</h1>
+<p style="text-align:center;">Serveur FiveM Roleplay</p>
+
+<!-- FEED MASTODON -->
+<div id="feed" class="loading">
+Chargement du feed...
+</div>
+
+<hr>
+
+<!-- FEED SERVEUR -->
+<h2>📢 Actualités Serveur</h2>
+
+<iframe 
+    src="https://rheyxviii.github.io/wiredistrict-social/">
+</iframe>
+
+<script>
+
 async function loadFeed(){
 
     try {
@@ -9,6 +44,7 @@ async function loadFeed(){
         const posts = await response.json();
 
         const feed = document.getElementById("feed");
+
         feed.innerHTML = "";
 
         posts.forEach(post => {
@@ -39,18 +75,16 @@ async function loadFeed(){
 
     } catch (error) {
 
-        console.log(error);
-
         document.getElementById("feed").innerHTML =
-            "Erreur chargement feed ❌";
+        "Erreur chargement feed ❌";
 
     }
 
-}<hr>
+}
 
-<h2 style="text-align:center;">📢 News serveur</h2>
+loadFeed();
 
-<iframe 
-    src="https://rheyxviii.github.io/wiredistrict-social/"
-    style="width:100%; height:600px; border:none;">
-</iframe>
+</script>
+
+</body>
+</html>
