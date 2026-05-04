@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>WireDistrict RP - Feed</title>
+<title>WireDistrict RP</title>
 
 <style>
 
@@ -19,6 +19,7 @@ body{
 
 h1{
     text-align:center;
+    margin-bottom:30px;
 }
 
 #feed{
@@ -50,9 +51,9 @@ h1{
 
 <body>
 
-<h1>🔥 WireDistrict Feed</h1>
+<h1>🔥 WireDistrict RP</h1>
 
-<div id="feed" class="loading">Chargement...</div>
+<div id="feed" class="loading">Chargement des posts...</div>
 
 <script>
 
@@ -62,34 +63,45 @@ async function loadFeed(){
 
     try {
 
-        // 🔥 RSS stable (ne casse pas comme l'API Mastodon)
-        const response = await fetch(
-            "https://rssproxy.deno.dev/?url=https://mastodon.social/@WireDistrict.rss"
+        // 🔥 récupérer compte Mastodon
+        const userRes = await fetch(
+            "https://mastodon.social/api/v1/accounts/lookup?acct=WireDistrict"
         );
 
-        const text = await response.text();
+        const user = await userRes.json();
 
-        const parser = new DOMParser();
-        const xml = parser.parseFromString(text, "text/xml");
+        if(!user || !user.id){
+            feed.innerHTML = "Compte introuvable ❌";
+            return;
+        }
 
-        const items = xml.querySelectorAll("item");
+        // 🔥 récupérer posts
+        const postsRes = await fetch(
+            `https://mastodon.social/api/v1/accounts/${user.id}/statuses?limit=10`
+        );
+
+        const posts = await postsRes.json();
 
         feed.innerHTML = "";
 
-        items.forEach((item, index) => {
-
-            if(index >= 10) return;
-
-            const title = item.querySelector("title")?.textContent || "";
-            const content = item.querySelector("description")?.textContent || "";
+        posts.forEach(post => {
 
             const div = document.createElement("div");
             div.className = "post";
 
-            div.innerHTML = `
-                <div>${content}</div>
-            `;
+            let html = "";
 
+            html += `<div>${post.content}</div>`;
+
+            if(post.media_attachments && post.media_attachments.length > 0){
+                post.media_attachments.forEach(media => {
+                    if(media.type === "image"){
+                        html += `<img src="${media.preview_url || media.url}">`;
+                    }
+                });
+            }
+
+            div.innerHTML = html;
             feed.appendChild(div);
 
         });
@@ -97,7 +109,7 @@ async function loadFeed(){
     } catch (err) {
 
         console.log(err);
-        feed.innerHTML = "Erreur chargement feed ❌";
+        feed.innerHTML = "Erreur chargement Mastodon ❌";
 
     }
 
